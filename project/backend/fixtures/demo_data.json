@@ -1,0 +1,133 @@
+[
+  {
+    "model": "core.organization",
+    "pk": "550e8400-e29b-41d4-a716-446655440000",
+    "fields": {
+      "name": "Mana HR",
+      "code": "BES",
+      "email": "info@brandselevate.com",
+      "phone": "+1-555-0123",
+      "address": "123 Business Street, Tech City, TC 12345",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.department",
+    "pk": "550e8400-e29b-41d4-a716-446655440001",
+    "fields": {
+      "name": "Human Resources",
+      "code": "HR",
+      "description": "Human Resources Department",
+      "organization": "550e8400-e29b-41d4-a716-446655440000",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.department",
+    "pk": "550e8400-e29b-41d4-a716-446655440002",
+    "fields": {
+      "name": "Engineering",
+      "code": "ENG",
+      "description": "Software Engineering Department",
+      "organization": "550e8400-e29b-41d4-a716-446655440000",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.jobtitle",
+    "pk": "550e8400-e29b-41d4-a716-446655440003",
+    "fields": {
+      "title": "HR Manager",
+      "description": "Human Resources Manager",
+      "department": "550e8400-e29b-41d4-a716-446655440001",
+      "level": 3,
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.jobtitle",
+    "pk": "550e8400-e29b-41d4-a716-446655440004",
+    "fields": {
+      "title": "Software Engineer",
+      "description": "Software Engineer",
+      "department": "550e8400-e29b-41d4-a716-446655440002",
+      "level": 2,
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "leaves.leavetype",
+    "pk": "550e8400-e29b-41d4-a716-446655440010",
+    "fields": {
+      "name": "Casual Leave",
+      "code": "CL",
+      "days_allowed_per_year": 12,
+      "carry_forward_allowed": true,
+      "max_carry_forward_days": 5,
+      "minimum_days_notice": 1,
+      "maximum_consecutive_days": 5,
+      "description": "Casual leave for personal work",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "leaves.leavetype",
+    "pk": "550e8400-e29b-41d4-a716-446655440011",
+    "fields": {
+      "name": "Sick Leave",
+      "code": "SL",
+      "days_allowed_per_year": 10,
+      "carry_forward_allowed": false,
+      "max_carry_forward_days": 0,
+      "minimum_days_notice": 0,
+      "maximum_consecutive_days": 10,
+      "description": "Sick leave for medical reasons",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "leaves.leavetype",
+    "pk": "550e8400-e29b-41d4-a716-446655440012",
+    "fields": {
+      "name": "Privilege Leave",
+      "code": "PL",
+      "days_allowed_per_year": 21,
+      "carry_forward_allowed": true,
+      "max_carry_forward_days": 10,
+      "minimum_days_notice": 7,
+      "maximum_consecutive_days": 21,
+      "description": "Privilege leave for vacation",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "attendance.shift",
+    "pk": "550e8400-e29b-41d4-a716-446655440020",
+    "fields": {
+      "name": "General Shift",
+      "start_time": "09:00:00",
+      "end_time": "18:00:00",
+      "break_duration": "01:00:00",
+      "total_hours": "8.00",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+]
