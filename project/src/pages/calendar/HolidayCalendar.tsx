@@ -12,6 +12,7 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import api from '../../services/api';
 
 interface Holiday {
   id: string;
@@ -47,54 +48,13 @@ export default function HolidayCalendar() {
   const loadHolidays = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await holidayApi.getHolidays({ month: selectedMonth + 1, year: selectedYear });
-      
-      // Mock data for demonstration
-      const mockHolidays: Holiday[] = [
-        {
-          id: '1',
-          name: 'New Year\'s Day',
-          date: `${selectedYear}-01-01`,
-          description: 'New Year celebration',
-          is_optional: false,
-          type: 'NATIONAL'
+      const response = await api.get('/leaves/holidays/', {
+        params: {
+          month: selectedMonth + 1,
+          year: selectedYear,
         },
-        {
-          id: '2',
-          name: 'Independence Day',
-          date: `${selectedYear}-07-04`,
-          description: 'National Independence Day',
-          is_optional: false,
-          type: 'NATIONAL'
-        },
-        {
-          id: '3',
-          name: 'Christmas Day',
-          date: `${selectedYear}-12-25`,
-          description: 'Christmas celebration',
-          is_optional: false,
-          type: 'RELIGIOUS'
-        },
-        {
-          id: '4',
-          name: 'Company Foundation Day',
-          date: `${selectedYear}-03-15`,
-          description: 'Brands Elevate Solutions Foundation Day',
-          is_optional: false,
-          type: 'COMPANY'
-        },
-        {
-          id: '5',
-          name: 'Diwali',
-          date: `${selectedYear}-11-12`,
-          description: 'Festival of Lights',
-          is_optional: true,
-          type: 'RELIGIOUS'
-        }
-      ];
-
-      setHolidays(mockHolidays);
+      });
+      setHolidays(response.data.results || response.data);
     } catch (error) {
       console.error('Error loading holidays:', error);
       toast.error('Failed to load holidays');
