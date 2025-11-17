@@ -319,7 +319,10 @@ export default function EmployeeEdit() {
                   onChange={(e) => {
                     const deptId = e.target.value;
                     const dept = departments.find(d => d.id === deptId);
-                    setEmployee(prev => prev ? { ...prev, department: dept || null } : null);
+setEmployee((prev: Employee | null): Employee | null => {
+  if (!prev) return null;
+  return { ...prev, department: dept || undefined };
+});
                     if (deptId) {
                       loadJobTitles(deptId);
                     }
@@ -337,7 +340,10 @@ export default function EmployeeEdit() {
                   onChange={(e) => {
                     const titleId = e.target.value;
                     const title = jobTitles.find(t => t.id === titleId);
-                    setEmployee(prev => prev ? { ...prev, job_title: title || null } : null);
+setEmployee((prev: Employee | null): Employee | null => {
+  if (!prev) return null;
+  return { ...prev, job_title: title || undefined };
+});
                   }}
                   options={jobTitles.map(title => ({
                     value: title.id,

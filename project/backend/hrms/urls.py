@@ -43,6 +43,7 @@ urlpatterns = [
     path('api/v1/core/', include('apps.core.urls')),
     path("api/v1/resignantion/", include("apps.resignation.urls")),
 
+    path('api-auth/',include('rest_framework.urls')),
 ]
 
 # Serve media files in development

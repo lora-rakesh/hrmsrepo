@@ -190,6 +190,8 @@ export default function AllLeavesList() {
 
   return (
     <Layout>
+       <div className="min-h-screen bg-gray-50 pt-4 pb-10">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="space-y-6">
         {/* Header */}
         <div>
@@ -418,6 +420,8 @@ export default function AllLeavesList() {
             </nav>
           </div>
         )}
+      </div>
+      </div>
       </div>
     </Layout>
   );
