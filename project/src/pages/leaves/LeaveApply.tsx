@@ -98,6 +98,8 @@ export default function LeaveApply() {
 
   return (
     <Layout>
+       <div className="min-h-screen bg-gray-50 pt-4 pb-10">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-4 border-b border-gray-200">
@@ -225,6 +227,8 @@ export default function LeaveApply() {
             </div>
           </form>
         </div>
+      </div>
+      </div>
       </div>
     </Layout>
   );

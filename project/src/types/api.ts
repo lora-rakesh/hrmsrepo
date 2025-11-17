@@ -331,6 +331,8 @@ export interface EmployeeCreateForm {
   job_title?: string;
   manager?: string;
   employment_type?: EmploymentType;
+  work_mode: string;
+
   date_of_joining: string;
   basic_salary?: string;
 }

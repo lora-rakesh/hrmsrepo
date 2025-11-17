@@ -111,6 +111,9 @@ removeAvatar: async (): Promise<User> => {
     return response.data;
   },
 };
+const clean = (value: any) =>
+  value === undefined || value === null ? '' : value;
+
 
 // Employee API
 export const employeeApi = {
@@ -129,10 +132,43 @@ export const employeeApi = {
     return response.data;
   },
 
-  update: async (id: string, data: Partial<Employee>): Promise<Employee> => {
-    const response = await api.put(`/employees/${id}/`, data);
-    return response.data;
-  },
+update: async (id: string, data: Partial<Employee>): Promise<Employee> => {
+  const payload: Record<string, any> = {
+    // 🔹 Required backend fields
+    employee_id: clean(data.employee_id),
+    marital_status: clean(data.marital_status),
+    nationality: clean(data.nationality),
+    permanent_address: clean(data.permanent_address),
+    city: clean(data.city),
+    state: clean(data.state),
+    postal_code: clean(data.postal_code),
+
+    // 🔹 Optional and other existing fields
+    gender: clean(data.gender),
+    date_of_birth: clean(data.date_of_birth),
+    personal_email: clean(data.personal_email),
+    emergency_contact_name: clean(data.emergency_contact_name),
+    emergency_contact_phone: clean(data.emergency_contact_phone),
+    emergency_contact_relation: clean(data.emergency_contact_relation),
+    current_address: clean(data.current_address),
+    country: clean(data.country),
+    department: data.department?.id || null,
+    job_title: data.job_title?.id || null,
+    manager: data.manager?.id || null,
+    employment_status: clean(data.employment_status),
+    employment_type: clean(data.employment_type),
+    date_of_joining: clean(data.date_of_joining),
+// probation_end_date: data.probation_end_date
+//   ? new Date(data.probation_end_date).toISOString().split('T')[0]
+//   : '',
+    basic_salary: data.basic_salary ? Number(data.basic_salary) : null,
+  };
+
+  console.log("Payload sent:", payload);
+
+  const response = await api.put(`/employees/${id}/`, payload);
+  return response.data;
+},
 
   updateProfile: async (id: string, data: Partial<Employee>): Promise<Employee> => {
     const response = await api.put(`/employees/${id}/update_profile/`, data);

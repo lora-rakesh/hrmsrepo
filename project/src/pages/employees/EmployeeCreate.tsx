@@ -5,7 +5,7 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
 import { employeeApi, departmentApi, jobTitleApi } from '../../services/api';
-import { Department, JobTitle, EmployeeCreateForm, UserRole } from '../../types/api';
+import { Department, JobTitle, EmployeeCreateForm } from '../../types/api';
 import toast from 'react-hot-toast';
 
 export default function EmployeeCreate() {
@@ -13,6 +13,7 @@ export default function EmployeeCreate() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [jobTitles, setJobTitles] = useState<JobTitle[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState<EmployeeCreateForm>({
     username: '',
     email: '',
@@ -32,17 +33,23 @@ export default function EmployeeCreate() {
     job_title: '',
     manager: '',
     employment_type: 'FULL_TIME',
+    work_mode: 'REGULAR',
+
     date_of_joining: new Date().toISOString().split('T')[0],
     basic_salary: '',
   });
 
+  // Load departments
   useEffect(() => {
     loadDepartments();
   }, []);
 
+  // Load job titles when department changes
   useEffect(() => {
     if (formData.department) {
       loadJobTitles(formData.department);
+    } else {
+      setJobTitles([]);
     }
   }, [formData.department]);
 
@@ -68,11 +75,26 @@ export default function EmployeeCreate() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
-    if (!formData.username || !formData.email || !formData.first_name || !formData.last_name) {
-      toast.error('Please fill in all required fields');
-      return;
+
+    // Backend-required field validation
+    const requiredFields = [
+      'email',
+      'first_name',
+      'last_name',
+      'password',
+      'employee_id',
+      'department',
+      'job_title',
+      'employment_type',
+      'work_mode',
+      'date_of_joining',
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field as keyof EmployeeCreateForm]) {
+        toast.error(`Please fill in ${field.replace('_', ' ')} field`);
+        return;
+      }
     }
 
     if (formData.password.length < 8) {
@@ -80,31 +102,42 @@ export default function EmployeeCreate() {
       return;
     }
 
+    // Convert salary to a number or null
+    const payload = {
+      ...formData,
+      basic_salary: formData.basic_salary
+        ? parseFloat(formData.basic_salary)
+        : null,
+    };
+
     setIsLoading(true);
-    
     try {
-      await employeeApi.create(formData);
+      await employeeApi.create(payload);
       toast.success('Employee created successfully!');
       navigate('/employees');
     } catch (error: any) {
       console.error('Error creating employee:', error);
-      const errorMessage = error?.response?.data?.detail || 'Failed to create employee';
+      const errorMessage =
+        error?.response?.data?.detail ||
+        'Failed to create employee. Please check all required fields.';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
 
     // Auto-generate username from email
     if (name === 'email') {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         username: value.split('@')[0],
       }));
@@ -132,6 +165,11 @@ export default function EmployeeCreate() {
     { value: 'F', label: 'Female' },
     { value: 'O', label: 'Other' },
   ];
+  const workModeOptions = [
+    { value: 'REGULAR', label: 'Regular (On-site)' },
+    { value: 'WFH', label: 'Work From Home' },
+    { value: 'HYBRID', label: 'Hybrid' },
+  ];
 
   return (
     <Layout>
@@ -141,11 +179,13 @@ export default function EmployeeCreate() {
             <h1 className="text-2xl font-bold text-gray-900">Add New Employee</h1>
             <p className="text-sm text-gray-600">Create a new employee profile</p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="p-6 space-y-8">
-            {/* Account Information */}
+            {/* Account Info */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Account Information
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
                   label="Email Address"
@@ -156,7 +196,7 @@ export default function EmployeeCreate() {
                   onChange={handleChange}
                   placeholder="john.doe@company.com"
                 />
-                
+
                 <Input
                   label="Username"
                   name="username"
@@ -165,7 +205,7 @@ export default function EmployeeCreate() {
                   onChange={handleChange}
                   placeholder="john.doe"
                 />
-                
+
                 <Input
                   label="Password"
                   name="password"
@@ -176,7 +216,7 @@ export default function EmployeeCreate() {
                   placeholder="Minimum 8 characters"
                   helperText="Employee will be able to change this password after first login"
                 />
-                
+
                 <Select
                   label="Role"
                   name="role"
@@ -188,9 +228,11 @@ export default function EmployeeCreate() {
               </div>
             </div>
 
-            {/* Personal Information */}
+            {/* Personal Info */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Personal Information
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
                   label="First Name"
@@ -199,7 +241,7 @@ export default function EmployeeCreate() {
                   value={formData.first_name}
                   onChange={handleChange}
                 />
-                
+
                 <Input
                   label="Last Name"
                   name="last_name"
@@ -207,7 +249,7 @@ export default function EmployeeCreate() {
                   value={formData.last_name}
                   onChange={handleChange}
                 />
-                
+
                 <Input
                   label="Employee ID"
                   name="employee_id"
@@ -216,7 +258,7 @@ export default function EmployeeCreate() {
                   onChange={handleChange}
                   placeholder="EMP001"
                 />
-                
+
                 <Input
                   label="Date of Birth"
                   name="date_of_birth"
@@ -224,7 +266,7 @@ export default function EmployeeCreate() {
                   value={formData.date_of_birth}
                   onChange={handleChange}
                 />
-                
+
                 <Select
                   label="Gender"
                   name="gender"
@@ -232,7 +274,7 @@ export default function EmployeeCreate() {
                   onChange={handleChange}
                   options={genderOptions}
                 />
-                
+
                 <Input
                   label="Personal Email"
                   name="personal_email"
@@ -246,7 +288,9 @@ export default function EmployeeCreate() {
 
             {/* Emergency Contact */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Emergency Contact</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Emergency Contact
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Input
                   label="Contact Name"
@@ -254,7 +298,7 @@ export default function EmployeeCreate() {
                   value={formData.emergency_contact_name}
                   onChange={handleChange}
                 />
-                
+
                 <Input
                   label="Contact Phone"
                   name="emergency_contact_phone"
@@ -262,7 +306,7 @@ export default function EmployeeCreate() {
                   value={formData.emergency_contact_phone}
                   onChange={handleChange}
                 />
-                
+
                 <Input
                   label="Relationship"
                   name="emergency_contact_relation"
@@ -273,9 +317,11 @@ export default function EmployeeCreate() {
               </div>
             </div>
 
-            {/* Address Information */}
+            {/* Address Info */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Address Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Address Information
+              </h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -293,9 +339,11 @@ export default function EmployeeCreate() {
               </div>
             </div>
 
-            {/* Employment Information */}
+            {/* Employment Info */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Employment Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Employment Information
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Select
                   label="Department"
@@ -304,12 +352,12 @@ export default function EmployeeCreate() {
                   value={formData.department}
                   onChange={handleChange}
                   placeholder="Select department"
-                  options={departments.map(dept => ({
+                  options={departments.map((dept) => ({
                     value: dept.id,
                     label: dept.name,
                   }))}
                 />
-                
+
                 <Select
                   label="Job Title"
                   name="job_title"
@@ -317,13 +365,13 @@ export default function EmployeeCreate() {
                   value={formData.job_title}
                   onChange={handleChange}
                   placeholder="Select job title"
-                  options={jobTitles.map(title => ({
+                  options={jobTitles.map((title) => ({
                     value: title.id,
                     label: title.title,
                   }))}
                   disabled={!formData.department}
                 />
-                
+
                 <Select
                   label="Employment Type"
                   name="employment_type"
@@ -332,7 +380,14 @@ export default function EmployeeCreate() {
                   onChange={handleChange}
                   options={employmentTypeOptions}
                 />
-                
+                <Select
+                  label="Work Mode"
+                  name="work_mode"
+                  required
+                  value={formData.work_mode}
+                  onChange={handleChange}
+                  options={workModeOptions}
+                />
                 <Input
                   label="Date of Joining"
                   name="date_of_joining"
@@ -341,7 +396,7 @@ export default function EmployeeCreate() {
                   value={formData.date_of_joining}
                   onChange={handleChange}
                 />
-                
+
                 <Input
                   label="Basic Salary"
                   name="basic_salary"
@@ -361,10 +416,7 @@ export default function EmployeeCreate() {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                isLoading={isLoading}
-              >
+              <Button type="submit" isLoading={isLoading}>
                 Create Employee
               </Button>
             </div>
