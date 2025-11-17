@@ -39,20 +39,20 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True, min_length=8)
     role = serializers.ChoiceField(choices=User.ROLE_CHOICES, default='EMPLOYEE')
-    
+
     class Meta:
         model = Employee
         fields = [
             'username', 'email', 'first_name', 'last_name', 'password', 'role',
-            'employee_id', 'date_of_birth', 'gender', 'marital_status', 
+            'employee_id', 'date_of_birth', 'gender', 'marital_status',
             'nationality', 'personal_email', 'emergency_contact_name',
             'emergency_contact_phone', 'emergency_contact_relation',
             'current_address', 'permanent_address', 'city', 'state',
             'postal_code', 'country', 'department', 'job_title', 'manager',
-            'employment_status', 'employment_type', 'date_of_joining',
-            'probation_end_date', 'basic_salary'
+            'employment_status', 'employment_type', 'work_mode',    # 👈 ADDED HERE
+            'date_of_joining', 'probation_end_date', 'basic_salary'
         ]
-    
+
     def create(self, validated_data):
         # Extract user data
         user_data = {
@@ -63,15 +63,16 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
             'role': validated_data.pop('role', 'EMPLOYEE'),
         }
         password = validated_data.pop('password')
-        
-        # Create user account
+
+        # Create user
         user = User.objects.create_user(**user_data)
         user.set_password(password)
         user.save()
-        
-        # Create employee profile
+
+        # Create employee
         employee = Employee.objects.create(user=user, **validated_data)
         return employee
+
 
 class EmployeeListSerializer(serializers.ModelSerializer):
     """

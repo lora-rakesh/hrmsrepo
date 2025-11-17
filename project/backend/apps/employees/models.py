@@ -67,6 +67,19 @@ class Employee(TimeStampedModel):
     date_of_joining = models.DateField()
     date_of_leaving = models.DateField(null=True, blank=True)
     probation_end_date = models.DateField(null=True, blank=True)
+
+    WORK_MODE_CHOICES = [
+        ('ONSITE', 'On-Site'),
+        ('REMOTE', 'Remote'),
+        ('HYBRID', 'Hybrid'),
+    ]
+        
+    work_mode = models.CharField(
+        max_length=20,
+        choices=WORK_MODE_CHOICES,
+        default='ONSITE'
+    )
+
     
     # Salary Information (basic - detailed in payroll app)
     basic_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
