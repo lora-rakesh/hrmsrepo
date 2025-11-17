@@ -56,8 +56,9 @@ export function Table({ columns, data, isLoading, emptyMessage = 'No data found'
   }
 
   return (
-    <div className={`overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg ${className}`}>
-      <table className="min-w-full divide-y divide-gray-300">
+<div className={`overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg ${className}`}>
+  <table className="min-w-max divide-y divide-gray-300 w-full">
+
         <thead className="bg-gray-50">
           <tr>
             {columns.map((column) => (

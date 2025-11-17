@@ -15,29 +15,34 @@ export default function EmployeeCreate() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<EmployeeCreateForm>({
-    username: '',
-    email: '',
-    first_name: '',
-    last_name: '',
-    password: '',
-    role: 'EMPLOYEE',
-    employee_id: '',
-    date_of_birth: '',
-    gender: '',
-    personal_email: '',
-    emergency_contact_name: '',
-    emergency_contact_phone: '',
-    emergency_contact_relation: '',
-    current_address: '',
-    department: '',
-    job_title: '',
-    manager: '',
-    employment_type: 'FULL_TIME',
-    work_mode: 'REGULAR',
+  username: '',
+  email: '',
+  first_name: '',
+  last_name: '',
+  password: '',
+  role: 'EMPLOYEE',
 
-    date_of_joining: new Date().toISOString().split('T')[0],
-    basic_salary: '',
-  });
+  employee_id: '',
+  date_of_birth: '',
+  gender: '',
+  personal_email: '',
+
+  emergency_contact_name: '',
+  emergency_contact_phone: '',
+  emergency_contact_relation: '',
+  
+  current_address: '',
+
+  department: '',
+  job_title: '',
+  
+  employment_type: 'FULL_TIME',
+  work_mode: 'ONSITE',
+
+  date_of_joining: new Date().toISOString().split('T')[0],
+  basic_salary: '',
+});
+
 
   // Load departments
   useEffect(() => {
