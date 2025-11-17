@@ -97,18 +97,28 @@ class LeaveRequest(TimeStampedModel):
         db_table = 'leaves_leave_request'
         ordering = ['-applied_date']
 
+from django.db import models
+
 class Holiday(TimeStampedModel):
     """
     Company holidays
     """
+    HOLIDAY_TYPE_CHOICES = [
+        ('NATIONAL', 'National Holiday'),
+        ('RELIGIOUS', 'Religious Holiday'),
+        ('COMPANY', 'Company Holiday'),
+        ('OPTIONAL', 'Optional Holiday'),
+    ]
+
     name = models.CharField(max_length=100)
     date = models.DateField()
     description = models.TextField(blank=True)
     is_optional = models.BooleanField(default=False)
-    
+    type = models.CharField(max_length=10, choices=HOLIDAY_TYPE_CHOICES, default='COMPANY')
+
     def __str__(self):
         return f"{self.name} - {self.date}"
-    
+
     class Meta:
         db_table = 'leaves_holiday'
         ordering = ['date']
