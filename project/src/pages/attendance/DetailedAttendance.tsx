@@ -16,6 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { getCurrentLocation, isWithinRange, COMPANY_LOCATIONS, Location } from '../../utils/locationUtils';
 import toast from 'react-hot-toast';
+import { CoffeeIcon } from 'lucide-react';
 
 
 interface AttendanceSession {
