@@ -292,3 +292,28 @@ export const teamApi = {
 };
 
 export default api;
+// Holiday API
+export const holidayApi = {
+  // Get all holidays (optionally by year or month)
+  getAll: async (params?: { month?: number; year?: number }) => {
+    const response = await api.get('/leaves/holidays/', { params });
+    return response.data.results || response.data;
+  },
+
+  // Create a new holiday
+  create: async (data: any) => {
+    const response = await api.post('/leaves/holidays/', data);
+    return response.data;
+  },
+
+  // Update an existing holiday
+  update: async (id: string, data: any) => {
+    const response = await api.put(`/leaves/holidays/${id}/`, data);
+    return response.data;
+  },
+
+  // Delete a holiday
+  delete: async (id: string) => {
+    await api.delete(`/leaves/holidays/${id}/`);
+  },
+};

@@ -6,12 +6,12 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
-  CalendarIcon, 
   PlusIcon,
   GiftIcon,
-  ClockIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import { holidayApi } from "../../services/api";
+ // ✅ Import from api.ts
 
 interface Holiday {
   id: string;
@@ -25,7 +25,6 @@ interface Holiday {
 export default function HolidayCalendar() {
   const { user } = useAuth();
   const [holidays, setHolidays] = useState<Holiday[]>([]);
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showAddModal, setShowAddModal] = useState(false);
@@ -44,57 +43,12 @@ export default function HolidayCalendar() {
     loadHolidays();
   }, [selectedMonth, selectedYear]);
 
+  // ✅ Fetch holidays from backend
   const loadHolidays = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await holidayApi.getHolidays({ month: selectedMonth + 1, year: selectedYear });
-      
-      // Mock data for demonstration
-      const mockHolidays: Holiday[] = [
-        {
-          id: '1',
-          name: 'New Year\'s Day',
-          date: `${selectedYear}-01-01`,
-          description: 'New Year celebration',
-          is_optional: false,
-          type: 'NATIONAL'
-        },
-        {
-          id: '2',
-          name: 'Independence Day',
-          date: `${selectedYear}-07-04`,
-          description: 'National Independence Day',
-          is_optional: false,
-          type: 'NATIONAL'
-        },
-        {
-          id: '3',
-          name: 'Christmas Day',
-          date: `${selectedYear}-12-25`,
-          description: 'Christmas celebration',
-          is_optional: false,
-          type: 'RELIGIOUS'
-        },
-        {
-          id: '4',
-          name: 'Company Foundation Day',
-          date: `${selectedYear}-03-15`,
-          description: 'Brands Elevate Solutions Foundation Day',
-          is_optional: false,
-          type: 'COMPANY'
-        },
-        {
-          id: '5',
-          name: 'Diwali',
-          date: `${selectedYear}-11-12`,
-          description: 'Festival of Lights',
-          is_optional: true,
-          type: 'RELIGIOUS'
-        }
-      ];
-
-      setHolidays(mockHolidays);
+      const response = await holidayApi.getAll({ month: selectedMonth + 1, year: selectedYear });
+      setHolidays(response);
     } catch (error) {
       console.error('Error loading holidays:', error);
       toast.error('Failed to load holidays');
@@ -103,11 +57,17 @@ export default function HolidayCalendar() {
     }
   };
 
+  // ✅ Add holiday to backend
   const handleAddHoliday = async () => {
     try {
-      // TODO: Replace with actual API call
-      // await holidayApi.create(holidayForm);
-      
+      await holidayApi.create({
+        name: holidayForm.name,
+        date: holidayForm.date,
+        description: holidayForm.description,
+        is_optional: holidayForm.is_optional,
+        type: holidayForm.type,
+      });
+
       toast.success('Holiday added successfully!');
       setShowAddModal(false);
       setHolidayForm({
@@ -117,19 +77,15 @@ export default function HolidayCalendar() {
         is_optional: false,
         type: 'COMPANY',
       });
-      loadHolidays();
+      await loadHolidays();
     } catch (error) {
+      console.error('Failed to add holiday:', error);
       toast.error('Failed to add holiday');
     }
   };
 
-  const getDaysInMonth = (month: number, year: number) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
-
-  const getFirstDayOfMonth = (month: number, year: number) => {
-    return new Date(year, month, 1).getDay();
-  };
+  const getDaysInMonth = (month: number, year: number) => new Date(year, month + 1, 0).getDate();
+  const getFirstDayOfMonth = (month: number, year: number) => new Date(year, month, 1).getDay();
 
   const isHoliday = (day: number) => {
     const dateStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -207,6 +163,7 @@ export default function HolidayCalendar() {
                 →
               </Button>
             </div>
+
             <div className="flex space-x-2">
               <Select
                 value={selectedYear.toString()}
@@ -221,35 +178,32 @@ export default function HolidayCalendar() {
 
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1">
-            {/* Day Headers */}
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
               <div key={day} className="p-2 text-center text-sm font-medium text-gray-500 bg-gray-50">
                 {day}
               </div>
             ))}
-            
-            {/* Empty cells for days before month starts */}
+
             {emptyDays.map(day => (
               <div key={`empty-${day}`} className="p-2 h-20 bg-gray-50"></div>
             ))}
-            
-            {/* Calendar days */}
+
             {days.map(day => {
               const holiday = isHoliday(day);
-              const isToday = day === new Date().getDate() && 
-                            selectedMonth === new Date().getMonth() && 
-                            selectedYear === new Date().getFullYear();
-              
+              const isToday = day === new Date().getDate() &&
+                selectedMonth === new Date().getMonth() &&
+                selectedYear === new Date().getFullYear();
+
               return (
                 <div
                   key={day}
                   className={`p-2 h-20 border border-gray-200 ${
-                    isToday ? 'bg-blue-50 border-blue-300' : 
+                    isToday ? 'bg-blue-50 border-blue-300' :
                     holiday ? 'bg-red-50 border-red-200' : 'bg-white'
                   }`}
                 >
                   <div className={`text-sm font-medium ${
-                    isToday ? 'text-blue-600' : 
+                    isToday ? 'text-blue-600' :
                     holiday ? 'text-red-600' : 'text-gray-900'
                   }`}>
                     {day}
@@ -336,14 +290,14 @@ export default function HolidayCalendar() {
               onChange={(e) => setHolidayForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="Enter holiday name"
             />
-            
+
             <Input
               label="Date"
               type="date"
               value={holidayForm.date}
               onChange={(e) => setHolidayForm(prev => ({ ...prev, date: e.target.value }))}
             />
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
               <textarea
@@ -354,7 +308,7 @@ export default function HolidayCalendar() {
                 placeholder="Holiday description..."
               />
             </div>
-            
+
             <Select
               label="Holiday Type"
               value={holidayForm.type}
@@ -366,7 +320,7 @@ export default function HolidayCalendar() {
                 { value: 'OPTIONAL', label: 'Optional Holiday' },
               ]}
             />
-            
+
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -379,7 +333,7 @@ export default function HolidayCalendar() {
                 Optional Holiday
               </label>
             </div>
-            
+
             <div className="flex justify-end space-x-3">
               <Button variant="secondary" onClick={() => setShowAddModal(false)}>
                 Cancel
